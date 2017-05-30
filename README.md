@@ -17,4 +17,11 @@ local rse  = tpl:save('./tmp/docx-file.docx')
 
 -- send output to the browser
 local res  = tpl:download()
+
+
+# Installation
+
+```
+#aptitude install lua5.1-zlib
+#luarocks install lua-docx
 ```
