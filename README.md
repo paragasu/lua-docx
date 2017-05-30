@@ -4,6 +4,7 @@ Lua library to generate word document from docx template file.
 
 # Usage
 
+```lua
     local docx = require 'lua-docx'
     local tpl  = docx:new('./tpl/docx-template.docx')
     local ok   = tpl:replace({ 
@@ -16,6 +17,7 @@ Lua library to generate word document from docx template file.
 
     -- send output to the browser
     local res  = tpl:download()
+```
 
 
 
