@@ -22,6 +22,7 @@ local res  = tpl:download()
 # Installation
 
 ```
+#aptitude install libreoffice-writer
 #aptitude install lua-zip
 #luarocks install lua-docx
 #luarocks install xml
