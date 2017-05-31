@@ -22,6 +22,7 @@ local res  = tpl:download()
 # Installation
 
 ```
-#aptitude install lua5.1-zlib
+#aptitude install lua-zip
 #luarocks install lua-docx
+#luarocks install xml
 ```
