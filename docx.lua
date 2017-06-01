@@ -76,8 +76,10 @@ function m.clean_docx_xml(docx_file)
   end
 end
 
-function m:download()
-  -- prompt browser to download file / open with msword
+-- copy file to public directory
+-- @param string full filename for the new file
+function m:move(out_filename)
+  return os.execute('mv ' .. self.docx ' ' .. out_filename) 
 end
 
 return m
