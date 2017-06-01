@@ -1,4 +1,4 @@
-local zip = require 'zip'
+local zip = require 'brimworks.zip'
 local xml = require 'xml'
 local lfs = require 'lfs'
 local i = require 'inspect'
@@ -15,11 +15,13 @@ end
 
 function m:get_docx_document_content()
   local doc = m:get_cleaned_docx_file()
-  local zfile, err = zip.open(doc)
-  if not zfile then return error('Failed to open ' .. doc .. ' : ' .. err) end
-  local file, err  = zfile:open('word/document.xml')
+  local ar, err = zip.open(doc)
+  if not ar then return error('Failed to open ' .. doc .. ' : ' .. err) end
+  local file_idx = ar:name_locate('word/document.xml')
+  local file, err  = ar:open(file_idx, zip.FL_UNCHANGED)
   if not file then return error('Cannot read document file: ' .. err) end
-  return file:read('*a') 
+  local stat = ar:stat(file_idx) 
+  return file:read(stat.size) 
 end
 
 function m:get_cleaned_docx_file()

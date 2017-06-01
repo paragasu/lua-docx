@@ -20,8 +20,8 @@ local res  = doc:download()
 
 
 ```bash
-#aptitude install libreoffice-writer libreoffice-base
-#aptitude install lua-zip
+#aptitude install libreoffice-writer libreoffice-base libzip-dev
+#luarocks install --server=http://luarocks.org/dev lua-zip
 #luarocks install lua-docx
 #luarocks install xml
 ```
