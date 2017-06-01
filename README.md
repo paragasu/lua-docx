@@ -17,11 +17,12 @@ local rse  = tpl:save('./tmp/docx-file.docx')
 
 -- send output to the browser
 local res  = tpl:download()
-
+```
 
 # Installation
 
-```
+
+```bash
 #aptitude install libreoffice-writer libreoffice-base
 #aptitude install lua-zip
 #luarocks install lua-docx
