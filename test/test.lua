@@ -1,12 +1,4 @@
 local docx = require 'docx'
-local doc  = docx:new('./test/test.docx')
---doc:replace(function(w) print(w) end)
-doc:replace({
-  ['#Matter.Number#'] = 'RY20170601',
-  ['#Contact.CompanyName#'] = 'Phi Software Sdn Bhd',
-  ['#Contact.FirstName#'] = 'Hello World',
-  ['#Contact.Email#'] = 'jeffry@bayau.com'
-})
 
 describe('Docx', function()
   it('get_filename', function()
