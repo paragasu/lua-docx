@@ -1,3 +1,5 @@
+-- Author: Jeffry L <paragasu@gmail.com>
+
 local zip = require 'brimworks.zip'
 local xml = require 'xml'
 local lfs = require 'lfs'
@@ -8,29 +10,12 @@ function m:new(filepath)
   if type(filepath) ~= 'string' then error('Invalid docx file') end
   if not string.match(filepath, '%.docx') then error('Only docx file supported') end
   if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
-  self.doc_file = filepath 
+  self.docx = m.get_cleaned_docx_file(filepath)
   self.tag_pattern = '#%a+%.%a+%s?%a+#'
+  self.ar = assert(zip.open(self.docx)) 
   return setmetatable(m, self)
 end
 
-function m:get_docx_document_content()
-  local doc = m:get_cleaned_docx_file()
-  local ar, err = zip.open(doc)
-  if not ar then return error('Failed to open ' .. doc .. ' : ' .. err) end
-  local file_idx = ar:name_locate('word/document.xml')
-  local file, err  = ar:open(file_idx, zip.FL_UNCHANGED)
-  if not file then return error('Cannot read document file: ' .. err) end
-  local stat = ar:stat(file_idx) 
-  return file:read(stat.size) 
-end
-
-function m:get_cleaned_docx_file()
-  local doc = m.get_filename(self.doc_file)
-  local tmp_doc = '/tmp/' .. doc
-  if not m.file_exists(tmp_doc) then m:clean_docx_xml() end
-  if not m.file_exists(tmp_doc) then return error('Fail to generate cleaned docx with libreoffice') end
-  return tmp_doc
-end
 
 -- get the filename given full path
 -- @param string path
@@ -49,22 +34,50 @@ function m.file_exists(filename)
 end
 
 function m:replace(tags)
-  local tpl, err  = m:get_docx_document_content() 
+  local header_idx = self.ar:name_locate('word/header1.xml')
+  local footer_idx = self.ar:name_locate('word/footer1.xml')
+  local docume_idx = self.ar:name_locate('word/document.xml')
+  local header_src = m:get_docx_xml_content(header_idx, tags)
+  local footer_src = m:get_docx_xml_content(footer_idx, tags)
+  local docume_src = m:get_docx_xml_content(docume_idx, tags)
+  self.ar:replace(header_idx, 'string', header_src) 
+  self.ar:replace(footer_idx, 'string', footer_src) 
+  self.ar:replace(docume_idx, 'string', docume_src) 
+  self.ar:close()
+end
+
+-- get the content of xml file inside the zip
+-- @param string word/document.xml, word/footer1.xml or word/header1.xml
+function m:get_docx_xml_content(idx, tags)
+  local file = assert(self.ar:open(idx))
+  local stat = self.ar:stat(idx) 
+  local tpl  = file:read(stat.size) 
   return string.gsub(tpl, self.tag_pattern, tags)
 end
 
-function m:download()
-  -- prompt browser to download file / open with msword
+-- get full filename of the cleaned docx file 
+-- @param string original docx template file
+-- @return string cleaned xml filename
+function m.get_cleaned_docx_file(docx_file)
+  local doc = m.get_filename(docx_file)
+  local tmp_doc = '/tmp/' .. doc
+  if not m.file_exists(tmp_doc) then m.clean_docx_xml(docx_file) end
+  if not m.file_exists(tmp_doc) then return error('Fail to generate cleaned docx with libreoffice') end
+  return tmp_doc
 end
 
 -- clean docx xml using libreoffice
-function m:clean_docx_xml()
-  local cmd = 'libreoffice --headless --convert-to docx --outdir /tmp ' .. self.doc_file
+function m.clean_docx_xml(docx_file)
+  local cmd = 'libreoffice --headless --convert-to docx --outdir /tmp ' .. docx_file
   local doc = assert(io.popen(cmd))   
   if not doc then error("Failed to clean up docx. Libreoffice installed?") end
   for line in doc:lines() do
     print(line)
   end
+end
+
+function m:download()
+  -- prompt browser to download file / open with msword
 end
 
 return m
