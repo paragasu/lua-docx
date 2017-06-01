@@ -7,6 +7,7 @@ local m = {}
 function m:new(filepath)
   if type(filepath) ~= 'string' then error('Invalid docx file') end
   if not string.match(filepath, '%.docx') then error('Only docx file supported') end
+  if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
   self.doc_file = filepath 
   self.tag_pattern = '#%a+%.%a+%s?%a+#'
   return setmetatable(m, self)
@@ -34,7 +35,7 @@ end
 -- @return string filename
 function m.get_filename(path)
   if type(path) ~= 'string' then error('Invalid filename') end
-  return string.match(path, '[%w+%-_]+%.docx')
+  return string.match(path, '[%w+%s%-_]+%.docx')
 end
 
 -- check if file exists
@@ -64,8 +65,4 @@ function m:clean_docx_xml()
   end
 end
 
-local doc = m:new('/tmp/test.docx')
---doc:clean_xml()
-doc:replace(function(w)
-  print(w)
-end)
+return m
