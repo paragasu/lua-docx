@@ -13,7 +13,7 @@ local ok   = tpl:replace({
 })
 
 -- save to given path
-local rse  = tpl:save('./tmp/docx-file.docx')
+local res  = tpl:save('./tmp/docx-file.docx')
 
 -- send output to the browser
 local res  = tpl:download()
