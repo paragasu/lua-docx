@@ -16,7 +16,6 @@ function m:new(filepath)
   return setmetatable(m, self)
 end
 
-
 -- get the filename given full path
 -- @param string path
 -- @return string filename
@@ -25,12 +24,26 @@ function m.get_filename(path)
   return string.match(path, '[%w+%s%-_]+%.docx')
 end
 
+-- get directory name
+function m.get_dirname(path)
+  local filename = m.get_filename(path)
+  return string.gsub(path, '/'..filename, '')
+end
+
 -- check if file exists
 -- @param string full path to filename
 -- @return boolean
 function m.file_exists(filename)
   if type(filename)~="string" then return false end
   return os.rename(filename, filename) and true or false
+end
+
+-- check if directory writeable
+function m.dir_writeable(dirname)
+  local stat = lfs.attributes(dirname)
+  if not stat then error("Directory do not exists") end
+  local perm = string.sub(stat.permissions, 8, 8)
+  return perm == 'w'
 end
 
 function m:replace(tags)
@@ -69,17 +82,16 @@ end
 -- clean docx xml using libreoffice
 function m.clean_docx_xml(docx_file)
   local cmd = 'libreoffice --headless --convert-to docx --outdir /tmp ' .. docx_file
-  local doc = assert(io.popen(cmd))   
-  if not doc then error("Failed to clean up docx. Libreoffice installed?") end
-  for line in doc:lines() do
-    print(line)
-  end
+  return os.execute(cmd)
 end
 
 -- copy file to public directory
 -- @param string full filename for the new file
 function m:move(out_filename)
-  return os.execute('mv ' .. self.docx ' ' .. out_filename) 
+  local dirname = m.get_dirname(out_filename)
+  if m.dir_writeable(dirname) then 
+    return os.execute('mv ' .. self.docx ' ' .. out_filename) 
+  end
 end
 
 return m

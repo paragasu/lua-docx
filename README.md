@@ -12,8 +12,8 @@ local ok   = doc:replace({
   ['#matters.email'] = 'some@email.com'
 })
 
--- send output to the browser
-local res  = doc:download()
+-- copy docx file to public web directory
+local res  = doc:move('/var/www/public/20170601.docx')
 ```
 
 # Installation

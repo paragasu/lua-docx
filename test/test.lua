@@ -1,4 +1,5 @@
 local docx = require 'docx'
+local doc  = docx:new('./test/test.docx')
 
 describe('Docx', function()
   it('get_filename', function()
@@ -21,6 +22,11 @@ describe('Docx', function()
     assert.are.equal(name, '20170418_Template_fields.docx')
   end) 
 
+  it('get_dirname', function()
+    local name = doc.get_dirname('./test/20170418_Template_fields.docx') 
+    assert.are.equal(name, './test')
+  end) 
+
   it('file_exists', function()
     local file = doc.file_exists('/tmp/no-exists')
     assert.are.equal(file, false)
@@ -34,5 +40,10 @@ describe('Docx', function()
   it('file_exists', function()
     local file = doc.file_exists('./test/test.docx')
     assert.are.equal(file, true)
+  end)
+
+  it('./test is public writeable', function()
+    local dir = doc.dir_writeable('./test')
+    assert.are.equal(dir, true)
   end)
 end)
