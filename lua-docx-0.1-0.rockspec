@@ -5,7 +5,7 @@ source = {
    tag = "v0.1-0"
 }
 description = {
-   summary  = "Lua document to generate doc from template file",
+   summary  = "Simple lua library to replace tags in the docx template file",
    homepage = "https://github.com/paragasu/lua-docx",
    license  = "MIT",
    maintainer = "Jeffry L. <paragasu@gmail.com>"

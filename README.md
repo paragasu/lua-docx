@@ -1,5 +1,5 @@
 # lua-docx
-Lua library to generate word document from docx template file.
+Simple lua library to replace tags in the docx template file.
 
 
 # Usage
