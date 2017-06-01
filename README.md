@@ -6,17 +6,14 @@ Lua library to generate word document from docx template file.
 
 ```lua
 local docx = require 'lua-docx'
-local tpl  = docx:new('./tpl/docx-template.docx')
-local ok   = tpl:replace({ 
+local doc  = docx:new('./tpl/docx-template.docx')
+local ok   = doc:replace({ 
   ['#matters.name'] = 'Some name',
   ['#matters.email'] = 'some@email.com'
 })
 
--- save to given path
-local res  = tpl:save('./tmp/docx-file.docx')
-
 -- send output to the browser
-local res  = tpl:download()
+local res  = doc:download()
 ```
 
 # Installation
