@@ -15,8 +15,9 @@ local ok   = doc:replace({
 -- copy docx file to public web directory
 local res  = doc:move('/var/www/public/20170601.docx')
 
--- forward the browser url point to this file eg: https://mydomain.com/20170601.docx
 ```
+
+Forward the browser url point to this file eg: https://mydomain.com/20170601.docx
 
 # Installation
 
