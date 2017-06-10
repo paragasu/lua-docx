@@ -53,4 +53,9 @@ describe('Docx', function()
   it('Output docx using libreoffice', function()
     doc.clean_docx_xml(lfs.currentdir() .. '/test/test.docx') 
   end) 
+
+  it('Replace tags', function()
+    local tags = { test = "hello" }
+    doc:replace(tags)
+  end) 
 end)
