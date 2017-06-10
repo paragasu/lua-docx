@@ -3,6 +3,8 @@
 local zip = require 'brimworks.zip'
 local xml = require 'xml'
 local lfs = require 'lfs'
+local exec = require 'resty.exec'
+local tmp_dir = os.getenv("HOME") .. '/tmp'
 local i = require 'inspect'
 local m = {}
 
@@ -35,7 +37,8 @@ end
 -- @return boolean
 function m.file_exists(filename)
   if type(filename)~="string" then return false end
-  return os.rename(filename, filename) and true or false
+  if not lfs.attributes(filename) then return false end
+  return true
 end
 
 -- check if directory writeable
@@ -73,16 +76,22 @@ end
 -- @return string cleaned xml filename
 function m.get_cleaned_docx_file(docx_file)
   local doc = m.get_filename(docx_file)
-  local tmp_doc = '/tmp/' .. doc
+  local tmp_doc = tmp_dir .. '/'.. doc
   if not m.file_exists(tmp_doc) then m.clean_docx_xml(docx_file) end
-  if not m.file_exists(tmp_doc) then return error('Fail to generate cleaned docx with libreoffice') end
+  if not m.file_exists(tmp_doc) then
+    return error('Fail to generate cleaned docx with libreoffice ' .. tmp_doc) 
+  end
   return tmp_doc
 end
 
 -- clean docx xml using libreoffice
+-- /usr/bin/libreoffice --headless --convert-to docx --outdir ~/tmp docx_file
 function m.clean_docx_xml(docx_file)
-  local cmd = 'libreoffice --headless --convert-to docx --outdir /tmp ' .. docx_file
-  return os.execute(cmd)
+  local exec = require 'resty.exec'
+  local prog = exec.new('/tmp/exec.sock')
+  local cmd  = 'libreoffice --headless --convert-to docx --outdir ' .. tmp_dir .. '"' .. docx_file .. '"'
+  local res, err = prog('bash', '-c', cmd);
+  print(res.stdout)
 end
 
 -- copy file to public directory
@@ -90,7 +99,7 @@ end
 function m:move(out_filename)
   local dirname = m.get_dirname(out_filename)
   if m.dir_writeable(dirname) then 
-    return os.execute('mv ' .. self.docx ' ' .. out_filename) 
+    return os.execute('mv "' .. self.docx .. '" "' .. out_filename .. '"') 
   end
 end
 

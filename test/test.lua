@@ -1,5 +1,7 @@
 local docx = require 'docx'
-local doc  = docx:new('./test/test.docx')
+local doc  = docx:new('/home/rogon/lua-docx/test/test.docx')
+
+require 'busted.runner'()
 
 describe('Docx', function()
   it('get_filename', function()
@@ -46,4 +48,8 @@ describe('Docx', function()
     local dir = doc.dir_writeable('./test')
     assert.are.equal(dir, true)
   end)
+
+  it('Output docx using libreoffice', function()
+    doc.clean_docx_xml('./test/test.docx') 
+  end) 
 end)
