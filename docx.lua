@@ -126,6 +126,8 @@ function m:move(out_filename)
   local dirname = m.get_dirname(out_filename)
   if m.is_writeable(dirname) then 
     return os.execute('mv "' .. self.docx .. '" "' .. out_filename .. '"') 
+  else
+    error(dirname .. " is not writeable")
   end
 end
 
