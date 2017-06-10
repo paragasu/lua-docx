@@ -4,7 +4,6 @@ local zip = require 'brimworks.zip'
 local xml = require 'xml'
 local lfs = require 'lfs'
 local exec = require 'resty.exec'
-local tmp_dir = os.getenv("HOME") .. '/tmp'
 local i = require 'inspect'
 local m = {}
 
@@ -16,7 +15,6 @@ function m:new(filepath)
   if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
   self.docx = m.get_cleaned_docx_file(filepath)
   self.tag_pattern = '#%a+%.%a+%s?%a+#'
-  self.ar = assert(zip.open(self.docx)) 
   return setmetatable(m, self)
 end
 
@@ -52,24 +50,27 @@ function m.dir_writeable(dirname)
 end
 
 function m:replace(tags)
+  local ar = assert(zip.open(self.docx)) 
   local header_idx = self.ar:name_locate('word/header1.xml')
   local footer_idx = self.ar:name_locate('word/footer1.xml')
   local docume_idx = self.ar:name_locate('word/document.xml')
   local header_src = m:get_docx_xml_content(header_idx, tags)
   local footer_src = m:get_docx_xml_content(footer_idx, tags)
   local docume_src = m:get_docx_xml_content(docume_idx, tags)
-  self.ar:replace(header_idx, 'string', header_src) 
-  self.ar:replace(footer_idx, 'string', footer_src) 
-  self.ar:replace(docume_idx, 'string', docume_src) 
-  self.ar:close()
+  ar:replace(header_idx, 'string', header_src) 
+  ar:replace(footer_idx, 'string', footer_src) 
+  ar:replace(docume_idx, 'string', docume_src) 
+  ar:close()
 end
 
 -- get the content of xml file inside the zip
 -- @param string word/document.xml, word/footer1.xml or word/header1.xml
 function m:get_docx_xml_content(idx, tags)
-  local file = assert(self.ar:open(idx))
-  local stat = self.ar:stat(idx) 
+  local ar = assert(zip.open(self.docx)) 
+  local file = assert(ar:open(idx))
+  local stat = ar:stat(idx) 
   local tpl  = file:read(stat.size) 
+  ar:close()
   return string.gsub(tpl, self.tag_pattern, tags)
 end
 
@@ -78,7 +79,7 @@ end
 -- @return string cleaned xml filename
 function m.get_cleaned_docx_file(docx_file)
   local doc = m.get_filename(docx_file)
-  local tmp_doc = tmp_dir .. '/'.. doc
+  local tmp_doc = '/tmp/'.. doc
   if not m.file_exists(tmp_doc) then m.clean_docx_xml(docx_file) end
   if not m.file_exists(tmp_doc) then
     return error('Fail to generate cleaned docx with libreoffice ' .. tmp_doc) 
@@ -91,7 +92,7 @@ end
 function m.clean_docx_xml(docx_file)
   local exec = require 'resty.exec'
   local prog = exec.new('/tmp/exec.sock')
-  local cmd  = 'libreoffice --headless --convert-to docx --outdir ' .. tmp_dir .. ' "' .. docx_file .. '"'
+  local cmd  = 'libreoffice --headless --convert-to docx --outdir /tmp "' .. docx_file .. '"'
   local res, err = prog('bash', '-c', cmd);
   if string.find(res.stdout, "using filter") then return true end
   return false
