@@ -25,6 +25,7 @@ Forward the browser url point to this file eg: https://mydomain.com/20170601.doc
 ```
 #aptitude install libreoffice-writer libreoffice-base libzip-dev libreoffice-java-common
 #luarocks install --server=http://luarocks.org/dev lua-zip
+#luarocks install lua-resty-exec
 #luarocks install lua-docx
 ```
 
