@@ -6,6 +6,7 @@ local lfs = require 'lfs'
 local exec = require 'resty.exec'
 local sock_file = '/tmp/exec.sock' 
 local i = require 'inspect'
+
 -- using /tmp end up with Renaming temporary file failed: Operation not permitted
 -- error. But using other directory if fine.
 local home_dir = os.getenv('HOME') or lfs.currentdir()
@@ -48,23 +49,16 @@ function m.file_exists(filename)
   return true
 end
 
--- check if file writeable
-function m.file_writeable(file)
-  if not m.file_exists(file) then return false end
-  local stat = lfs.attributes(file)
-  local perm = string.sub(stat.permissions, 8, 8)
-  return perm == 'w'
-end
-
 -- make file writeable
 function m.set_file_writeable(file)
   return os.execute('chmod +w ' .. file)
 end
 
--- check if directory writeable
-function m.dir_writeable(dirname)
-  local stat = lfs.attributes(dirname)
-  if not stat then error("Directory do not exists") end
+-- check if directory/file writeable
+function m.is_writeable(file)
+  if not m.file_exists(file) then return false end
+  local stat = lfs.attributes(file)
+  if not stat then error(file .. "do not exists") end
   local perm = string.sub(stat.permissions, 8, 8)
   return perm == 'w'
 end
@@ -72,7 +66,7 @@ end
 function m:replace(tags)
   ngx.log(ngx.ERR, "open zip " .. self.docx)
   -- file must be writeable
-  if not m.file_writeable(self.docx) then
+  if not m.is_writeable(self.docx) then
     m.set_file_writeable(self.docx)
   end
   local ar = assert(zip.open(self.docx)) 
@@ -112,9 +106,8 @@ end
 -- clean docx xml using libreoffice
 -- /usr/bin/libreoffice --headless --convert-to docx --outdir ~/tmp docx_file
 function m.clean_docx_xml(docx_file)
-  if not m.file_writeable(sock_file) then
+  if not m.is_writeable(sock_file) then
     ngx.log(ngx.ERR, sock_file .. ' is not writeable') 
-    --return
   end
   local prog = exec.new(sock_file)
   local cmd  = 'libreoffice --headless --convert-to docx --outdir ' .. tmp_dir .. ' "' .. docx_file .. '"'
@@ -123,7 +116,7 @@ function m.clean_docx_xml(docx_file)
     m.set_file_writeable(tmp_dir .. '/' .. m.get_filename(docx_file))
     return true 
   else
-    error("Failed to generate a clean docx file: " .. cmd .. res.stderr)  
+    error("Failed to generate a clean docx file: " .. cmd .. i(res))  
   end
 end
 
@@ -131,7 +124,7 @@ end
 -- @param string full filename for the new file
 function m:move(out_filename)
   local dirname = m.get_dirname(out_filename)
-  if m.dir_writeable(dirname) then 
+  if m.is_writeable(dirname) then 
     return os.execute('mv "' .. self.docx .. '" "' .. out_filename .. '"') 
   end
 end
