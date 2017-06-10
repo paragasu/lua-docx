@@ -51,9 +51,9 @@ end
 
 function m:replace(tags)
   local ar = assert(zip.open(self.docx)) 
-  local header_idx = self.ar:name_locate('word/header1.xml')
-  local footer_idx = self.ar:name_locate('word/footer1.xml')
-  local docume_idx = self.ar:name_locate('word/document.xml')
+  local header_idx = ar:name_locate('word/header1.xml')
+  local footer_idx = ar:name_locate('word/footer1.xml')
+  local docume_idx = ar:name_locate('word/document.xml')
   local header_src = m:get_docx_xml_content(header_idx, tags)
   local footer_src = m:get_docx_xml_content(footer_idx, tags)
   local docume_src = m:get_docx_xml_content(docume_idx, tags)
