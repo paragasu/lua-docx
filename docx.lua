@@ -11,6 +11,8 @@ local m = {}
 function m:new(filepath)
   if type(filepath) ~= 'string' then error('Invalid docx file') end
   if not string.match(filepath, '%.docx') then error('Only docx file supported') end
+  if string.find(filepath, '%.%/') then error('Relative path using ./ not supported ' .. filepath) end
+  if string.find(filepath, '%~%/') then error('Relative path using ~/ not supported ' .. filepath) end
   if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
   self.docx = m.get_cleaned_docx_file(filepath)
   self.tag_pattern = '#%a+%.%a+%s?%a+#'
@@ -89,9 +91,10 @@ end
 function m.clean_docx_xml(docx_file)
   local exec = require 'resty.exec'
   local prog = exec.new('/tmp/exec.sock')
-  local cmd  = 'libreoffice --headless --convert-to docx --outdir ' .. tmp_dir .. '"' .. docx_file .. '"'
+  local cmd  = 'libreoffice --headless --convert-to docx --outdir ' .. tmp_dir .. ' "' .. docx_file .. '"'
   local res, err = prog('bash', '-c', cmd);
-  print(res.stdout)
+  if string.find(res.stdout, "using filter") then return true end
+  return false
 end
 
 -- copy file to public directory
