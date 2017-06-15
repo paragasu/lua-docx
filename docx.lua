@@ -17,6 +17,7 @@ m.__index = m
 
 function m:new(filepath)
   local self = setmetatable({}, m)
+  local filepath = string.gsub(filepath, "%s+", "")
   if type(filepath) ~= 'string' then error('Invalid docx file') end
   if not string.match(filepath, '%.docx') then error('Only docx file supported') end
   if string.find(filepath, '%.%/') then error('Relative path using ./ not supported ' .. filepath) end
