@@ -37,7 +37,7 @@ For this we use `libreoffice` to process the docx file.
 ```
 $cd /usr/src
 $git clone https://github.com/skarnet/skalibs
-$git checkout v2.4.0.2
+$cd skalibs
 $configure
 $make
 #make install
@@ -47,8 +47,9 @@ $make
 
 ```
 $git clone https://github.com/jprjr/sockexec
+$cd sockexec
 $make
-$make install
+#make install
 ```
 
 ### Install systemd service
