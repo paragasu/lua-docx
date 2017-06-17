@@ -1,6 +1,6 @@
 local docx = require 'docx'
 local lfs  = require 'lfs'
-local doc  = docx:new('/home/rogon/lua-docx/test/test.docx')
+local doc  = docx.new('/home/rogon/lua-docx/test/test.docx', '/home/rogon/lua-docx/tmp')
 
 require 'busted.runner'()
 
@@ -46,12 +46,12 @@ describe('Docx', function()
   end)
 
   it('./test is public writeable', function()
-    local dir = doc.dir_writeable(lfs.currentdir() .. '/test')
+    local dir = doc.is_writeable(lfs.currentdir() .. '/test')
     assert.are.equal(dir, true)
   end)
 
   it('Output docx using libreoffice', function()
-    doc.clean_docx_xml(lfs.currentdir() .. '/test/test.docx') 
+    doc:clean_docx_xml(lfs.currentdir() .. '/test/test.docx') 
   end) 
 
   it('Replace tags', function()
