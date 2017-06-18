@@ -6,7 +6,7 @@ Simple lua library to replace tags in the docx template file.
 
 ```lua
 local docx = require 'docx'
-local doc  = docx:new('./tpl/docx-template.docx')
+local doc  = docx:new('./tpl/docx-template.docx', '/home/myhome/tmpdir')
 local ok   = doc:replace({ 
   ['#matters.name'] = 'Some name',
   ['#matters.email'] = 'some@email.com'
