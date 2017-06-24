@@ -112,7 +112,7 @@ function m:clean_docx_xml(input_docx)
   if not self.tmp_dir then error("tmp_dir is missing " .. i(self.tmp_dir)) end
   if not input_docx then error("Missing input file " .. i(input_docx)) end
   local prog = exec.new(sock_file)
-  local cmd  = string.format("libreoffice --headless --convert-to docx:"MS Word 2007 XML" --outdir %s %q", self.tmp_dir, input_docx)
+  local cmd  = string.format('libreoffice --headless --convert-to docx:"MS Word 2007 XML" --outdir %s %q', self.tmp_dir, input_docx)
   ngx.log(ngx.NOTICE, "docx: " .. cmd)
   local res, err = prog('bash', '-c', cmd);
   if res and string.find(res.stdout, "using filter") then 
