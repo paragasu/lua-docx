@@ -17,7 +17,7 @@ m.__index = m
 function m.new(filepath, tmp_dir)
   local self = setmetatable({}, m)
   if type(filepath) ~= 'string' then error('Invalid docx file') end
-  if not string.match(filepath, '%.docx') then error('Only docx file supported') end
+  if not string.match(filepath, '%.docx') then error('Only docx file supported ' .. filepath) end
   if string.find(filepath, '%.%/') then error('Relative path using ./ not supported ' .. filepath) end
   if string.find(filepath, '%~%/') then error('Relative path using ~/ not supported ' .. filepath) end
   if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
@@ -115,6 +115,7 @@ function m:clean_docx_xml(input_docx)
   local cmd  = string.format('libreoffice --headless --convert-to docx:"MS Word 2007 XML" --outdir %s %q', self.tmp_dir, input_docx)
   ngx.log(ngx.NOTICE, "docx: " .. cmd)
   local res, err = prog('bash', '-c', cmd);
+  ngx.log(ngx.NOTICE, "cmd result", i(res), i(err)) 
   if res and string.find(res.stdout, "using filter") then 
     --m.set_file_writeable(self.tmp_dir .. '/' .. m.get_filename(docx_file))
     return true 
