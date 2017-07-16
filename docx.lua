@@ -71,15 +71,23 @@ function m:replace(tags)
   if not m.file_exists(self.docx) then error(self.docx .. "not exists") end 
   if not m.is_writeable(self.docx) then m.set_file_writeable(self.docx) end
   local ar = assert(zip.open(self.docx)) 
-  local header_idx = ar:name_locate('word/header1.xml')
-  local footer_idx = ar:name_locate('word/footer1.xml')
   local docume_idx = ar:name_locate('word/document.xml')
-  local header_src = m:get_docx_xml_content(ar, header_idx, tags)
-  local footer_src = m:get_docx_xml_content(ar, footer_idx, tags)
   local docume_src = m:get_docx_xml_content(ar, docume_idx, tags)
-  ar:replace(header_idx, 'string', header_src) 
-  ar:replace(footer_idx, 'string', footer_src) 
   ar:replace(docume_idx, 'string', docume_src) 
+
+  -- libreoffice do not generate header1.xml & footer1.xml by default
+  local header_idx = ar:name_locate('word/header1.xml')
+  if header_idx then
+    local header_src = m:get_docx_xml_content(ar, header_idx, tags)
+    ar:replace(header_idx, 'string', header_src) 
+  end
+
+  local footer_idx = ar:name_locate('word/footer1.xml')
+  if footer_idx then
+    local footer_src = m:get_docx_xml_content(ar, footer_idx, tags)
+    ar:replace(footer_idx, 'string', footer_src) 
+  end
+
   ar:close()
 end
 
