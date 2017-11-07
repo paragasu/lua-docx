@@ -33,7 +33,7 @@ end
 -- @return string filename
 function m.get_filename(path)
   if type(path) ~= 'string' then error('Invalid filename') end
-  return string.match(path, '[%w+%s%-_]+%.docx')
+  return string.match(path, '[%w+%s%-%._]+%.docx')
 end
 
 -- get directory name
@@ -121,6 +121,7 @@ function m:clean_docx_xml(input_docx)
   if not input_docx then error("Missing input file " .. i(input_docx)) end
   local prog = exec.new(sock_file)
   local cmd  = string.format('/usr/bin/libreoffice --headless --convert-to docx:"MS Word 2007 XML" --outdir %s %q', self.tmp_dir, input_docx)
+  --prog.stdin = string.format('--headless --convert-to docx:"MS Word 2007 XML" --outdir %s %q', self.tmp_dir, input_docx)
   local res, err = prog('/bin/bash', '-c', cmd);
   ngx.log(ngx.ERR, "cmd result", cmd, i(res), i(err)) 
   if res and string.find(res.stdout, "using filter") then 
