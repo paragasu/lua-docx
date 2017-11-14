@@ -97,7 +97,7 @@ function m:get_docx_xml_content(ar, idx, tags)
   local file = assert(ar:open(idx))
   local stat = ar:stat(idx) 
   local tpl  = file:read(stat.size) 
-  local tagpattern = '#%a+%.%a+%s?%a+#'
+  local tagpattern = '#%a+%.[%a%s%d]+#'
   file:close()
   return string.gsub(tpl, tagpattern, tags) or ''
 end
