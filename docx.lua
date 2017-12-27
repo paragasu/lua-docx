@@ -4,7 +4,7 @@ local zip = require 'brimworks.zip'
 local xml = require 'xml'
 local lfs = require 'lfs'
 local exec = require 'resty.exec'
-local sock_file = '/tmp/exec.sock' 
+local sock_file = '/home/rogon/tmp/exec.sock' 
 local i = require 'inspect'
 
 local m = {}
@@ -33,7 +33,7 @@ end
 -- @return string filename
 function m.get_filename(path)
   if type(path) ~= 'string' then error('Invalid filename') end
-  return string.match(path, '[%w+%s%-%._]+%.docx')
+  return string.match(path, '[%w+%s%-%._]+%.docx$')
 end
 
 -- get directory name
@@ -53,7 +53,7 @@ end
 
 -- make file writeable
 function m.set_file_writeable(file)
-  return os.execute('chmod +w ' .. file)
+  return os.execute('chmod +w "' .. file .. '"')
 end
 
 -- check if directory/file writeable

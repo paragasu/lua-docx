@@ -1,13 +1,13 @@
 local docx = require 'docx'
 local lfs  = require 'lfs'
-local doc  = docx.new('/home/rogon/lua-docx/test/test.docx', '/home/rogon/lua-docx/tmp')
+local doc  = docx.new('/home/rogon/lua-docx/test/doc test.docx', '/home/rogon/lua-docx/tmp')
 
 require 'busted.runner'()
 
 describe('Docx', function()
   it('get_filename', function()
-    local name = doc.get_filename('./test/test.docx') 
-    assert.are.equal(name, 'test.docx')
+    local name = doc.get_filename('./test/doc test.docx') 
+    assert.are.equal(name, 'doc test.docx')
   end) 
 
   it('get_filename', function()
@@ -41,7 +41,7 @@ describe('Docx', function()
   end)
 
   it('file_exists', function()
-    local file = doc.file_exists(lfs.currentdir() .. '/test/test.docx')
+    local file = doc.file_exists(lfs.currentdir() .. '/test/doc test.docx')
     assert.are.equal(file, true)
   end)
 
@@ -51,7 +51,7 @@ describe('Docx', function()
   end)
 
   it('Output docx using libreoffice', function()
-    doc:clean_docx_xml(lfs.currentdir() .. '/test/test.docx') 
+    doc:clean_docx_xml(lfs.currentdir() .. '/test/doc test.docx') 
   end) 
 
   it('Replace tags', function()
