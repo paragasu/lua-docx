@@ -30,6 +30,11 @@ describe('Docx', function()
     assert.are.equal(name, './test')
   end) 
 
+  it('get_dirname', function()
+    local name = doc.get_dirname('./test/doc test - 01827383.docx') 
+    assert.are.equal(name, './test')
+  end) 
+
   it('file_exists', function()
     local file = doc.file_exists('/tmp/no-exists')
     assert.are.equal(file, false)
