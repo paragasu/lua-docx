@@ -23,7 +23,7 @@ function m.new(filepath, tmp_dir)
   if not m.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
   if not tmp_dir then error("Writable temporary directory not provided") end
   self.tmp_dir = tmp_dir
-  self.docx = m.get_cleaned_docx_file(self, filepath)
+  self.docx = filepath;
   ngx.log(ngx.NOTICE, "tmp_dir: " .. self.tmp_dir)
   return self
 end
@@ -122,6 +122,7 @@ function m:get_docx_xml_content(ar, idx, tags)
   return string.gsub(tpl, '#%a+%.[%a%s%d]+#', tags) or ''
 end
 
+--[[
 -- get full filename of the cleaned docx file 
 -- @param string original docx template file
 -- @return string cleaned xml filename
@@ -151,6 +152,7 @@ function m:clean_docx_xml(input_docx)
     error("Failed to generate a clean docx file: " .. cmd .. i(res))  
   end
 end
+--]]
 
 -- copy file to public directory
 -- @param string full filename for the new file

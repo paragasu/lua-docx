@@ -5,21 +5,30 @@ Simple lua library to replace tags in the docx template file.
 # Usage
 
 ```lua
+local sock_file = '/home/rogon/tmp/exec.sock' 
+local tmp_dir = '/home/myhome/tmpdir'
+
 local docx = require 'docx'
-local doc  = docx:new('./tpl/docx-template.docx', '/home/myhome/tmpdir')
-local ok   = doc:replace({ 
+local docx_cleaner = require 'docx-cleaner'
+
+local dc = docx_cleaner:new(tmp_dir, sock_file_path)
+local cleaned_docx = dc.clean_xml(./tmp/docx-tpl.docx')
+
+local doc  = docx:new(tmp_dir)
+local file = doc.file(cleaned_docx)
+local ok, err = file.replace({ 
   ['#matters.name#'] = 'Some name',
   ['#matters.email#'] = 'some@email.com'
 })
 
 -- copy docx file to public web directory
-local res  = doc:move('/var/www/public/20170601.docx')
+local res  = util:move('/var/www/public/20170601.docx')
 
 ```
 
 Forward the browser url point to this file eg: https://mydomain.com/20170601.docx
 
-# Usage
+# API
 
 ### new(docx\_tpl\_path, tmp\_file\_dir)
 - docx\_tpl\_path _string_ docx file with full path 
