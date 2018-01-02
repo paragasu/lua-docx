@@ -110,6 +110,7 @@ function m:escape_xml_chars(tags)
   for tag, value in pairs(tags) do
     data[tag] = string.gsub(value, '[<>&\'"]', xml_chars) 
   end
+  ngx.log(ngx.ERR, "escape xml" .. i(tags) .. " -> " .. i(data)) 
   return data or ''
 end
 
