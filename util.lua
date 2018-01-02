@@ -36,7 +36,7 @@ function m.file_set_writeable(file)
 end
 
 -- check if directory/file writeable
-function m.file_is_writeable(file)
+function m.file_writeable(file)
   if not m.file_exists(file) then return false end
   local stat = lfs.attributes(file)
   if not stat then error(file .. "do not exists") end
