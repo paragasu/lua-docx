@@ -8,8 +8,8 @@ Simple lua library to replace tags in the docx template file.
 local docx = require 'docx'
 local doc  = docx:new('./tpl/docx-template.docx', '/home/myhome/tmpdir')
 local ok   = doc:replace({ 
-  ['#matters.name'] = 'Some name',
-  ['#matters.email'] = 'some@email.com'
+  ['#matters.name#'] = 'Some name',
+  ['#matters.email#'] = 'some@email.com'
 })
 
 -- copy docx file to public web directory
@@ -34,8 +34,10 @@ Forward the browser url point to this file eg: https://mydomain.com/20170601.doc
 
 # Installation
 
+It is important to configure the lua-docx-xml-cleaner in order for lua-docx to work properly.
+
+
 ```
-#luarocks 
 #luarocks install --server=http://luarocks.org/dev lua-zip
 #luarocks install lua-docx-xml-cleaner
 #luarocks install lua-docx
