@@ -73,8 +73,7 @@ function m:replace_docx_xml_content(idx)
   local file = assert(self.ar:open(idx))
   local stat = self.ar:stat(idx) 
   local tpl  = file:read(stat.size) 
-  local source = m:replace_xml_tags(tpl)
-  self.ar:replace(idx, 'string', source) 
+  self.ar:replace(idx, 'string', m:replace_xml_tags(tpl))
   file:close()
 end
 
