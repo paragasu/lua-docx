@@ -22,10 +22,9 @@ local ok, err = file.replace({
 })
 
 -- copy docx file to public web directory
-local res  = util:move('/var/www/public/20170601.docx')
+local res, err = os.rename(cleaned_docx, '/var/www/public/20170601.docx')
 
 ```
-
 Forward the browser url point to this file eg: https://mydomain.com/20170601.docx
 
 # API

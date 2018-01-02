@@ -157,12 +157,9 @@ end
 -- copy file to public directory
 -- @param string full filename for the new file
 function m:move(out_filename)
-  local dirname = m.get_dirname(out_filename)
-  if m.is_writeable(dirname) then 
-    return os.execute('mv "' .. self.docx .. '" "' .. out_filename .. '"') 
-  else
-    error(dirname .. " is not writeable")
-  end
+  local res, err = os.rename(self.docx, out_filename) 
+  if err then error(dirname .. " is not writeable") end
+  return res
 end
 
 return m
