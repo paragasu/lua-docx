@@ -36,10 +36,6 @@ Forward the browser url point to this file eg: https://mydomain.com/20170601.doc
 ### replace(tags)
 - tags _table_ table of tag -> value
 
-### move(output\_file)
-- output\_file _string_ move generated file to given directory and filename
-
-
 # Installation
 
 It is important to configure the lua-docx-xml-cleaner in order for lua-docx to work properly.
