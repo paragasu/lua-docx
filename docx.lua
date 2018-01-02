@@ -11,14 +11,17 @@ m.__index = m
 -- @param string tmp directory to process the file
 --        using /tmp end up with Renaming temporary file failed: Operation not permitted
 --        error. But using other directory is fine.
-function m.new(filepath, tmp_dir)
-  ngx.log(ngx.NOTICE, "tmp_dir: " .. self.tmp_dir)
-  m:validate_file(filepath)
+function m.new(tmp_dir)
   local self = setmetatable({}, m)
   self.tmp_dir = tmp_dir
+  ngx.log(ngx.NOTICE, "tmp_dir: " .. self.tmp_dir)
+  return self
+end
+
+function m:file(docx_file)
+  m:validate_file(filepath)
   self.docx = filepath;
   self.ar = nil;
-  return self
 end
 
 function m:validate_file(filepath)
