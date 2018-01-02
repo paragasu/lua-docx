@@ -15,8 +15,7 @@ local dc = docx_cleaner.new(tmp_dir, sock_file_path)
 local cleaned_docx = dc:clean_xml(./tmp/docx-tpl.docx')
 
 local doc  = docx.new(tmp_dir)
-local file = doc:file(cleaned_docx)
-local ok, err = file:replace({ 
+local ok, err = doc:replace_tags(cleaned_docx, { 
   ['#matters.name#'] = 'Some name',
   ['#matters.email#'] = 'some@email.com'
 })
@@ -33,12 +32,10 @@ Forward the browser url point to this file eg: https://mydomain.com/20170601.doc
 - tmp\_file\_dir _string_ output file directory
 
 
-### file(docx\_tpl\_path)
+### replace_tags(docx\_tpl\_path, tags)
 - docx\_tpl\_path _string_ docx file with full path 
-
-
-### replace(tags)
 - tags _table_ table of tag -> value
+- return boolean, err 
 
 
 # Installation
