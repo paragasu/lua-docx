@@ -41,7 +41,7 @@ function m.get_dirname(path)
   local filename = m.get_filename(path)
   local start_pos = string.find(path, filename, 1, true) - 2
   local dirname = string.sub(path, 1, start_pos)
-  ngx.log(ngx.ERR, "filename:" .. filename .. " dirname: " .. dirname)
+  --ngx.log(ngx.ERR, "filename:" .. filename .. " dirname: " .. dirname)
   return dirname
 end
 
@@ -73,25 +73,44 @@ function m:replace(tags)
   -- file must be writeable
   if not m.file_exists(self.docx) then error(self.docx .. "not exists") end 
   if not m.is_writeable(self.docx) then m.set_file_writeable(self.docx) end
+  -- escape xml tags
+  local escaped_tags = m:escape_xml_chars(tags)
+
   local ar = assert(zip.open(self.docx)) 
   local docume_idx = ar:name_locate('word/document.xml')
-  local docume_src = m:get_docx_xml_content(ar, docume_idx, tags)
+  local docume_src = m:get_docx_xml_content(ar, docume_idx, escaped_tags)
   ar:replace(docume_idx, 'string', docume_src) 
 
   -- libreoffice do not generate header1.xml & footer1.xml by default
   local header_idx = ar:name_locate('word/header1.xml')
   if header_idx then
-    local header_src = m:get_docx_xml_content(ar, header_idx, tags)
+    local header_src = m:get_docx_xml_content(ar, header_idx, escaped_tag)
     ar:replace(header_idx, 'string', header_src) 
   end
 
   local footer_idx = ar:name_locate('word/footer1.xml')
   if footer_idx then
-    local footer_src = m:get_docx_xml_content(ar, footer_idx, tags)
+    local footer_src = m:get_docx_xml_content(ar, footer_idx, escaped_tags)
     ar:replace(footer_idx, 'string', footer_src) 
   end
 
   ar:close()
+end
+
+
+function m:escape_xml_chars(tags)
+  local data = {}
+  local xml_chars = {
+    ['<'] = "&#60;",
+    ['>'] = "&#62;",
+    ['&'] = "&#38;",
+    ["'"] = "&#39;",  -- single quote
+    ['"'] = "&#34;"   -- double quote
+  } 
+  for tag, value in pairs(tags) do
+    data[tag] = string.gsub(value, '[%<%>%&\'%"]', xml_chars) 
+  end
+  return data
 end
 
 -- get the content of xml file inside the zip
@@ -100,9 +119,8 @@ function m:get_docx_xml_content(ar, idx, tags)
   local file = assert(ar:open(idx))
   local stat = ar:stat(idx) 
   local tpl  = file:read(stat.size) 
-  local tagpattern = '#%a+%.[%a%s%d]+#'
   file:close()
-  return string.gsub(tpl, tagpattern, tags) or ''
+  return string.gsub(tpl, '#%a+%.[%a%s%d]+#', tags) or ''
 end
 
 -- get full filename of the cleaned docx file 

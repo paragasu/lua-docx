@@ -61,6 +61,42 @@ describe('Docx', function()
 
   it('Replace tags', function()
     local tags = { test = "hello" }
-    doc:replace(tags)
+    --doc:replace(tags)
+  end) 
+
+  it('Escape special chars: &', function()
+    local tags = { test = "hello &" }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, "hello &#38;")
+  end) 
+
+  it('Escape special chars: <', function()
+    local tags = { test = "hello <" }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, "hello &#60;")
+  end) 
+
+  it('Escape special chars: >', function()
+    local tags = { test = "hello >" }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, "hello &#62;")
+  end) 
+
+  it('Escape special chars: "', function()
+    local tags = { test = 'hello "' }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, "hello &#34;")
+  end) 
+
+  it("Escape special chars: '", function()
+    local tags = { test = "hello '" }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, "hello &#39;")
+  end) 
+
+  it('Escape special chars: ""', function()
+    local tags = { test = 'hello <>' }
+    local result = doc:escape_xml_chars(tags)
+    assert.are.equal(result.test, 'hello &#60;&#62;')
   end) 
 end)
