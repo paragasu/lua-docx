@@ -108,9 +108,9 @@ function m:escape_xml_chars(tags)
     ['"'] = "&#34;"   -- double quote
   } 
   for tag, value in pairs(tags) do
-    data[tag] = string.gsub(value, '[%<%>%&\'%"]', xml_chars) 
+    data[tag] = string.gsub(value, '[<>&\'"]', xml_chars) 
   end
-  return data
+  return data or ''
 end
 
 -- get the content of xml file inside the zip
