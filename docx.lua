@@ -121,7 +121,7 @@ function m:get_docx_xml_content(ar, idx, tags)
   local stat = ar:stat(idx) 
   local tpl  = file:read(stat.size) 
   file:close()
-  ngx.log(ngx.ERR, "tags:" .. i(tags))
+  ngx.log(ngx.ERR, "doc:" .. i(idx) .. " tags:" .. i(tags))
   return string.gsub(tpl, '#%a+%.[%a%s%d]+#', tags) or ''
 end
 
