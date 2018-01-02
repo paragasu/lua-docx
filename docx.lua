@@ -1,3 +1,4 @@
+-- Replace docx tag with string value
 -- Author: Jeffry L <paragasu@gmail.com>
 
 local zip = require 'brimworks.zip'

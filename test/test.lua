@@ -1,3 +1,6 @@
+-- Unit test
+-- Author: Jeffry L <paragasu@gmail.com>
+
 local docx = require 'docx'
 local util = require 'util'
 local lfs  = require 'lfs'
