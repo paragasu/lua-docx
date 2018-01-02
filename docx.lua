@@ -18,10 +18,24 @@ function m.new(tmp_dir)
   return self
 end
 
-function m:file(docx_file)
+function m:replace(tags)
   m:validate_file(filepath)
   self.docx = filepath;
-  self.ar = nil;
+  self.ar = assert(zip.open(self.docx)) 
+
+  ngx.log(ngx.NOTICE, "open zip " .. self.docx)
+  -- file must be writeable
+  if not u.file_exists(self.docx) then error(self.docx .. "not exists") end 
+  if not u.is_writeable(self.docx) then u.set_file_writeable(self.docx) end
+
+  -- escape xml tags
+  local escaped_tags = m:escape_xml_chars(tags)
+  
+  m:replace_docx_document()
+  m:replace_docx_header()
+  m:replace_docx_footer()
+
+  self.ar:close()
 end
 
 function m:validate_file(filepath)
@@ -31,23 +45,6 @@ function m:validate_file(filepath)
   if string.find(filepath, '%~%/') then error('Relative path using ~/ not supported ' .. filepath) end
   if not u.file_exists(filepath) then error('File '.. filepath .. ' not exists') end
   if not tmp_dir then error("Writable temporary directory not provided") end
-end
-
-function m:replace(tags)
-  ngx.log(ngx.NOTICE, "open zip " .. self.docx)
-  -- file must be writeable
-  if not u.file_exists(self.docx) then error(self.docx .. "not exists") end 
-  if not u.is_writeable(self.docx) then u.set_file_writeable(self.docx) end
-
-  -- escape xml tags
-  local escaped_tags = m:escape_xml_chars(tags)
-  self.ar = assert(zip.open(self.docx)) 
-  
-  m:replace_docx_document()
-  m:replace_docx_header()
-  m:replace_docx_footer()
-
-  self.ar:close()
 end
 
 function m:escape_xml_chars(tags)
