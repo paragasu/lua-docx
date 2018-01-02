@@ -80,11 +80,10 @@ function m:replace(tags)
   local docume_idx = ar:name_locate('word/document.xml')
   local docume_src = m:get_docx_xml_content(ar, docume_idx, escaped_tags)
   ar:replace(docume_idx, 'string', docume_src) 
-
   -- libreoffice do not generate header1.xml & footer1.xml by default
   local header_idx = ar:name_locate('word/header1.xml')
   if header_idx then
-    local header_src = m:get_docx_xml_content(ar, header_idx, escaped_tag)
+    local header_src = m:get_docx_xml_content(ar, header_idx, escaped_tags)
     ar:replace(header_idx, 'string', header_src) 
   end
 
@@ -110,7 +109,6 @@ function m:escape_xml_chars(tags)
   for tag, value in pairs(tags) do
     data[tag] = string.gsub(value, '[<>&\'"]', xml_chars) 
   end
-  ngx.log(ngx.ERR, "escape xml" .. i(tags) .. " -> " .. i(data)) 
   return data or ''
 end
 
@@ -121,7 +119,6 @@ function m:get_docx_xml_content(ar, idx, tags)
   local stat = ar:stat(idx) 
   local tpl  = file:read(stat.size) 
   file:close()
-  ngx.log(ngx.ERR, "doc:" .. i(idx) .. " tags:" .. i(tags))
   return string.gsub(tpl, '#%a+%.[%a%s%d]+#', tags) or ''
 end
 
