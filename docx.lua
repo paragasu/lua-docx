@@ -22,15 +22,13 @@ function m:replace(tags)
   m:validate_file(filepath)
   self.docx = filepath;
   self.ar = assert(zip.open(self.docx)) 
+  self.escaped_tags = m:escape_xml_chars(tags)
 
   ngx.log(ngx.NOTICE, "open zip " .. self.docx)
   -- file must be writeable
   if not u.file_exists(self.docx) then error(self.docx .. "not exists") end 
   if not u.is_writeable(self.docx) then u.set_file_writeable(self.docx) end
 
-  -- escape xml tags
-  local escaped_tags = m:escape_xml_chars(tags)
-  
   m:replace_docx_document()
   m:replace_docx_header()
   m:replace_docx_footer()
@@ -57,34 +55,31 @@ end
 
 function m:replace_docx_document()
   local docume_idx = self.ar:name_locate('word/document.xml')
-  local docume_src = m:get_docx_xml_content(self.ar, docume_idx, escaped_tags)
-  self.ar:replace(docume_idx, 'string', docume_src) 
+  m:replace_docx_xml_content(docume_idx)
 end
 
 function m:replace_docx_header()
   local header_idx = self.ar:name_locate('word/header1.xml')
-  if header_idx then
-    local header_src = m:get_docx_xml_content(self.ar, header_idx, escaped_tags)
-    self.ar:replace(header_idx, 'string', header_src) 
-  end
+  if header_idx then m:replace_docx_xml_content(header_idx) end
 end
 
 function m:replace_docx_footer()
   local footer_idx = self.ar:name_locate('word/footer1.xml')
-  if footer_idx then
-    local footer_src = m:get_docx_xml_content(self.ar, footer_idx, escaped_tags)
-    self.ar:replace(footer_idx, 'string', footer_src) 
-  end
+  if footer_idx then m:replace_docx_xml_content(footer_idx) end
 end
 
 -- get the content of xml file inside the zip
--- @param string word/document.xml, word/footer1.xml or word/header1.xml
-function m:get_docx_xml_content(ar, idx, tags)
-  local file = assert(ar:open(idx))
-  local stat = ar:stat(idx) 
+function m:replace_docx_xml_content(idx)
+  local file = assert(self.ar:open(idx))
+  local stat = self.ar:stat(idx) 
   local tpl  = file:read(stat.size) 
+  local source = m:replace_xml_tags(tpl)
+  self.ar:replace(idx, 'string', source) 
   file:close()
-  return string.gsub(tpl, '#%a+%.[%a%s%d]+#', tags) or ''
+end
+
+function m:replace_xml_tags(tpl, tags)
+  return string.gsub(tpl, '#%a+%.[%a%s%d]+#', self.escaped_tags) or ''
 end
 
 return m
